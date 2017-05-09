@@ -2,10 +2,10 @@ const in_folder ='data/';
 const fs = require('fs');
 var file_names = ['India2011.csv','IndiaSC2011.csv','IndiaST2011.csv'];
 
-
+//for reading file names from pre defined directory
 /*fs.readdir(in_folder, (err, files) => {
     files.forEach(function(i){
-                  //    tasks(in_folder + i);
+                      tasks(in_folder + i);
 
                     console.log(i);
         
