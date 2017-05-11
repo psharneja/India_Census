@@ -11,3 +11,10 @@ h1 {
  font-family:  cursive;
  font-variant-caps: all-small-caps;
    }
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke:  #000;
+    shape-rendering: crispEdges;
+}

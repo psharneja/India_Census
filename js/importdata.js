@@ -28,11 +28,11 @@ var margin = { top: 20, right: 10, bottom: 100, left: 40},
 var svg = d3.select('body')
         .append('svg')
         .attr({
-            "width" : width + margin.right + margin.left,
+            "width" : width + margin.right + margin.left + 100,
             "height" : height + margin.top + margin.bottom
         })
         .append("g")
-        .attr("transform", "translate(" + margin.left + ',' + margin.right + ')');
+        .attr("transform", "translate(" + (margin.left+50) + ',' + margin.right + ')');
 
 
 var xScale = d3.scale.ordinal()
@@ -55,9 +55,13 @@ var yAxis = d3.svg.axis()
 
 
 
-d3.json("../output_files/age_wise_Data.json", function(error, data){
+d3.json("output_files/age_wise_data.json", function(error, data){
     if(error) console.log("Error: data not loaded");
     console.log(data);
+    
+    data.sort(function(a,b){
+        return b._all - a._all;
+    })
     
     xScale.domain(data.map(function(d) { return d._age; }) );
     yScale.domain([0, d3.max(data, function(d){ return d._all; }) ] );
@@ -67,18 +71,53 @@ d3.json("../output_files/age_wise_Data.json", function(error, data){
     .data(data)
     .enter()
     .append('rect')
+    .attr("height", 0)
+    .attr("y", height)
+    .transition().duration(3000)
+    .delay(function(d,i){ return i* 200;})
     .attr ({
         'x': function(d){ return xScale(d._age);},
         'y': function(d){ return yScale(d._all);},
         "width": xScale.rangeBand(),
         "height": function(d){ return height - yScale(d._all);}
         
-    });
+    })
+    .style("fill", function(d,i) { return 'rgb(59,89,' + (( i * 30) + 90) +')'});
+    
+    //draw  the xAxis
+    svg.append("g")
+        .attr("class","x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis)
+        .selectAll("text")
+        .attr("transform", "rotate(-60)")
+        .attr("dx", "-15")
+        .attr("dy", "11")
+        .style("text-anchor", "end")
+        .style("font-size", "14px");
+    
+     svg.selectAll("text")
+        .data(data)
+        .enter()
+        .append('text')
+        
+        .text(function(d) {return d._all;})
+        .attr('x', function(d){ return xScale(d._age) + xScale.rangeBand()/2; })
+        .attr('y', function(d){ return yScale(d._all) + 22; })
+        .attr("transform", "rotate(-90)")
+        .style("fill", "white")
+        .style("text-anchor", "middle");
     
     
+    svg.append("g")
+        .attr("class","y axis")
+        .call(yAxis)
+        .selectAll("text")
+        .style("font-size", "10px");
     
     
-
+    // label the bars
+   
     
     
     
