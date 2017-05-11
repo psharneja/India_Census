@@ -21,7 +21,7 @@
 
     
 var margin = { top: 20, right: 10, bottom: 100, left: 40},
-    width = 700 - margin.right - margin.left, 
+    width = 1000 - margin.right - margin.left, 
     height = 500 - margin.top - margin.bottom;
 
 
@@ -52,6 +52,7 @@ var xAxis = d3.svg.axis()
 var yAxis = d3.svg.axis()
             .scale(yScale)
             .orient("left");
+ 
 
 
 
@@ -66,7 +67,7 @@ d3.json("output_files/age_wise_data.json", function(error, data){
     xScale.domain(data.map(function(d) { return d._age; }) );
     yScale.domain([0, d3.max(data, function(d){ return d._all; }) ] );
     
-    
+    // draw the bars
     svg.selectAll('rect')
     .data(data)
     .enter()
@@ -82,7 +83,45 @@ d3.json("output_files/age_wise_data.json", function(error, data){
         "height": function(d){ return height - yScale(d._all);}
         
     })
+    
     .style("fill", function(d,i) { return 'rgb(59,89,' + (( i * 30) + 90) +')'});
+    
+    
+    svg.selectAll('rect2')
+    .data(data)
+    .enter()
+    .append('rect')
+    .attr("height", 0)
+    .attr("y", height)
+    .transition().duration(3500)
+    .delay(function(d,i){ return i* 200;})
+    .attr ({
+        'x': function(d){ return xScale(d._age);},
+        'y': function(d){ return yScale(d._males);},
+        "width": xScale.rangeBand(),
+        "height": function(d){ return height - yScale(d._males);}
+        
+    })
+    
+    .style("fill", function(d,i) { return 'red'});
+     svg.selectAll('rect3')
+    .data(data)
+    .enter()
+    .append('rect')
+    .attr("height", 0)
+    .attr("y", height)
+    .transition().duration(4000)
+    .delay(function(d,i){ return i* 200;})
+    .attr ({
+        'x': function(d){ return xScale(d._age);},
+        'y': function(d){ return yScale(d._females);},
+        "width": xScale.rangeBand(),
+        "height": function(d){ return height - yScale(d._females);}
+        
+    })
+    
+    .style("fill", function(d,i) { return 'green'});
+    
     
     //draw  the xAxis
     svg.append("g")
@@ -96,26 +135,36 @@ d3.json("output_files/age_wise_data.json", function(error, data){
         .style("text-anchor", "end")
         .style("font-size", "14px");
     
-     svg.selectAll("text")
+    /* svg.selectAll('rect.text')
         .data(data)
         .enter()
         .append('text')
-        
         .text(function(d) {return d._all;})
         .attr('x', function(d){ return xScale(d._age) + xScale.rangeBand()/2; })
         .attr('y', function(d){ return yScale(d._all) + 22; })
-        .attr("transform", "rotate(-90)")
         .style("fill", "white")
         .style("text-anchor", "middle");
-    
+    */
     
     svg.append("g")
         .attr("class","y axis")
         .call(yAxis)
         .selectAll("text")
         .style("font-size", "10px");
+   
+
+  svg.selectAll(".rect")
+      .data(data)
+    .enter().append("rect")
+      .attr("class", "rect")
+      .attr("x", function(d) { return x(d._all); })
+      .attr("width", x.rangeBand())
+      .attr("y", function(d) { return y(d._age); })
+      .attr("height", function(d) { return height - y(d._age); })
+      .on('mouseover', tip.show)
+      .on('mouseout', tip.hide)
     
-    
+  
     // label the bars
    
     
